@@ -1,6 +1,8 @@
 import os
 import faiss
 import numpy as np
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
 from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
@@ -53,7 +55,13 @@ class SimpleRAG:
 llm = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 rag = SimpleRAG(llm, retriever)
 
-# Example usage
-query = input("Enter your Query: ")
-response = rag.generate(query)
-print(response)
+# FastAPI app
+app = FastAPI()
+
+class QueryRequest(BaseModel):
+    query: str
+
+@app.post("/generate")
+def generate_answer(request: QueryRequest):
+    response = rag.generate(request.query)
+    return {"response": response}
