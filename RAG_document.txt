@@ -1,0 +1,54 @@
+Introduction:
+RAG is an AI framework that improves the accuracy and reliability of large language models (LLMs) by grounding them in external knowledge bases.
+LLMs can be inconsistent and prone to errors, lacking true understanding of word meaning.
+RAG addresses these issues by providing access to up-to-date facts and verifiable sources, increasing user trust.
+
+Purpose of RAG:
+Grounding LLMs on external knowledge for improved responses.
+
+Overcoming inconsistencies in LLM-generated answers.
+
+Challenges Addressed by RAG:
+Inconsistency in LLM responses.
+
+Lack of understanding of the meaning of words by LLMs.
+
+Reduction of opportunities for the model to leak sensitive data.
+
+Benefits of RAG:
+Accuracy and Fact-Checking:
+Ensures LLM responses are based on reliable sources, allowing users to verify claims.
+
+Reduced Bias and Hallucination:
+Limits LLM reliance on internal biases and prevents fabrication of information.
+
+Lower Cost and Maintenance:
+Reduces the need for continuous LLM retraining and updates, saving computational resources.
+
+How RAG Works:
+RAG consists of two distinct phases: retrieval and content generation.
+
+In the retrieval phase, algorithms search for and retrieve relevant information from external knowledge bases.
+This information is then used in the generative phase, where the LLM synthesizes an answer based on both the augmented prompt and its internal representation of training data.
+
+Phase 1: Retrieval
+Relevant information is retrieved from external sources based on the user's prompt or question.
+
+Sources vary depending on the context (open-domain internet vs. closed-domain enterprise data).
+
+Phase 2: Content Generation
+The retrieved information is appended to the user's prompt and fed to the LLM.
+
+The LLM generates a personalized answer based on the augmented prompt and its internal knowledge base.
+
+The answer can be delivered with links to its sources for transparency.
+
+Advantages and Applications of RAG
+RAG offers several advantages, including access to the latest, reliable facts, reduction in sensitive data leakage and decreased need for continuous model retraining.
+It finds applications in personalized responses, verifiable answers and lowering computational and financial costs in enterprise settings.
+
+Access to current and reliable information.
+
+Reduced opportunities for sensitive data leakage.
+
+Lower computational and financial costs in LLM-powered applications.
