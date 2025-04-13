@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  rag-app:
+    image: dhiraj918106/rag_openai:latest
+    container_name: rag_container
+    restart: unless-stopped
+    pull_policy: always  # Always pull the latest image
+    ports:
+      - "8000:8000"  # change this if your app runs on a different port
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file:
+      - .env  # make sure this file exists and includes OPENAI_API_KEY
