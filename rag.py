@@ -7,9 +7,11 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders.csv_loader import CSVLoader
-
-# Local import
+from sqlite3_langchain import db, insert_employee 
 from get_relevant_documents import get_answer_from_llm
+from langchain.chains import create_sql_query_chain
+from langchain_openai import ChatOpenAI
+from llama_index.llms.openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -53,8 +55,8 @@ class SimpleRAG:
     def generate(self, query):
         retrieved_docs = self.retriever.retrieve(query)
         augmented_query = f"Context: {' '.join(retrieved_docs)} Query: {query}"
-        response = self.llm.invoke(augmented_query)
-        return response
+        response = self.llm.complete(augmented_query)
+        return response.text  # ✅ Fixed to return plain string
 
 llm = OpenAI(api_key=openai_api_key)
 rag = SimpleRAG(llm, retriever)
@@ -65,6 +67,11 @@ app = FastAPI()
 # Pydantic schemas
 class QueryRequest(BaseModel):
     query: str
+
+class EmployeeRequest(BaseModel):
+    name: str
+    age: int
+    department: str
 
 @app.post("/generate")
 def generate_answer(request: QueryRequest):
@@ -83,3 +90,30 @@ def csv_based_answer(request: QueryRequest):
         question=request.query,
     )
     return {"response": response}
+
+@app.post("/db-query")
+def db_query(request: QueryRequest):
+    """SQL query-based answer using database"""
+    llm_for_sql = ChatOpenAI(api_key=openai_api_key)
+    chain = create_sql_query_chain(llm_for_sql, db)
+
+    # Generate SQL from LLM
+    sql_query = chain.invoke({"question": request.query})
+
+    # Optional: log it for debugging
+    print("Generated SQL:", sql_query)
+
+    # ⚠️ Fix for multiple statements — keep only the first
+    sanitized_sql = sql_query.strip().split(";")[0]
+
+    # Run the sanitized query
+    result = db.run(sanitized_sql)
+
+    return {"response": result}
+
+
+@app.post("/add-employee")
+def add_employee(request: EmployeeRequest):
+    """Add new employee to SQLite database, avoiding duplicates"""
+    insert_employee(request.name, request.age, request.department)
+    return {"status": "Employee inserted (if not duplicate)"}
